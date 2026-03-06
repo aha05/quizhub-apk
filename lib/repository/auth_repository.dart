@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../model/user_model.dart';
 import '../services/api.dart';
 
 class AuthRepository {
@@ -34,5 +35,10 @@ class AuthRepository {
   Future<bool> isLoggedIn() async {
     final token = await getToken();
     return token != null;
+  }
+
+  Future<User> authUser() async {
+    final response = await api.get("/auth/me");
+    return User.fromJson(response);
   }
 }

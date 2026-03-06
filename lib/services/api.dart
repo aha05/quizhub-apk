@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../repository/auth_repository.dart';
 
+
 class Api {
   final String baseUrl;
 
@@ -32,7 +33,7 @@ class Api {
     }
   }
 
-  Future<Map<String, dynamic>> get(String path) async {
+  Future<T> get<T>(String path) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(AuthRepository.TOKEN_KEY);
 

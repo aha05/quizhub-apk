@@ -1,21 +1,91 @@
 import 'package:flutter/material.dart';
+import '../quiz/quiz_list_screen.dart';
 import '../../repository/auth_repository.dart';
-import '../quiz/quiz_question_screen.dart';
+import '../../services/api.dart';
+import '../../services/home_service.dart';
+import '../../model/category_model.dart';
+import '../../model/user_activity_model.dart';
+import '../auth/login_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  final String username = "Yonas";
-  final String level = "Pro Player";
-  final String badge = "🔥 Gold Badge";
 
-  final List<Map<String, dynamic>> categories = [
-    {"name": "Science", "icon": Icons.science, "color": Colors.orangeAccent},
-    {"name": "History", "icon": Icons.history, "color": Colors.greenAccent},
-    {"name": "Tech", "icon": Icons.computer, "color": Colors.blueAccent},
-    {"name": "Sports", "icon": Icons.sports_basketball, "color": Colors.redAccent},
-  ];
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final HomeService _service = HomeService(Api());
+
+  List<Category> categories = [];
+  UserActivity? userActivity;
+
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+
+      final results = await Future.wait([
+        _service.fetchCategories(),
+        _service.fetchUserActivity(),
+      ]);
+
+      setState(() {
+        categories = results[0] as List<Category>;
+        userActivity = results[1] as UserActivity;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to load data")),
+      );
+    }
+  }
+
+  final Map<String, Map<String, dynamic>> categoryUIMap = {
+    "science": {
+      "icon": Icons.science,
+      "color": Colors.orangeAccent,
+    },
+    "history": {
+      "icon": Icons.history,
+      "color": Colors.greenAccent,
+    },
+    "tech": {
+      "icon": Icons.computer,
+      "color": Colors.blueAccent,
+    },
+    "sports": {
+      "icon": Icons.sports_basketball,
+      "color": Colors.redAccent,
+    },
+  };
+
+  Map<String, dynamic> getCategoryUI(String name) {
+    return categoryUIMap[name.toLowerCase()] ??
+        {
+          "icon": Icons.category,
+          "color": Colors.grey,
+        };
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       drawer: _buildDrawer(context),
       appBar: AppBar(
@@ -27,76 +97,23 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            /// 🔥 USER HEADER
             _buildUserHeader(),
-
             const SizedBox(height: 25),
-
-            /// 📊 STATS CARDS
             _buildStatsSection(),
-
             const SizedBox(height: 30),
-
             const Text(
-              "Choose Category",
+              "Categories",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 15),
-
-            /// 📚 CATEGORY GRID
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 15,
-              ),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QuizQuestionScreen(),
-                    ),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: categories[index]['color'].withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(
-                        color: categories[index]['color'],
-                        width: 2,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(categories[index]['icon'],
-                            size: 50, color: categories[index]['color']),
-                        const SizedBox(height: 10),
-                        Text(
-                          categories[index]['name'],
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+            _buildCategoryGrid(),
           ],
         ),
       ),
     );
   }
 
-  /// 🧑 USER HEADER
+  /// USER HEADER
   Widget _buildUserHeader() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -115,16 +132,21 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  username,
+                  userActivity?.name ?? "",
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                Text(level, style: const TextStyle(color: Colors.grey)),
+                Text(userActivity?.level ?? "",
+                    style: const TextStyle(color: Colors.grey)),
                 const SizedBox(height: 5),
-                Text(badge,
-                    style: const TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  userActivity!.badges.isNotEmpty
+                      ? userActivity!.badges.first
+                      : "First Quiz",
+                  style: const TextStyle(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold),
+                ),
               ],
             )
           ],
@@ -133,75 +155,143 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  /// 📊 STATS SECTION
+  /// STATS
   Widget _buildStatsSection() {
-  return Column(
-    children: [
-      Row(
-        children: [
-          Expanded(child: _buildStatCard("Total Quiz", "24")),
-          const SizedBox(width: 15),
-          Expanded(child: _buildStatCard("Avg Score", "82%")),
-        ],
-      ),
-      const SizedBox(height: 15),
-      Row(
-        children: [
-          Expanded(child: _buildStatCard("Completed", "18")),
-          const SizedBox(width: 15),
-          Expanded(child: _buildStatCard("Rank", "#5")),
-        ],
-      ),
-    ],
-  );
-}
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+                child: _buildStatCard(
+                    "Total Quiz", userActivity!.totalQuizzes.toString())),
+            const SizedBox(width: 15),
+            Expanded(
+                child: _buildStatCard(
+                    "Avg Score", "${userActivity!.averageScore}%")),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Row(
+          children: [
+            Expanded(
+                child: _buildStatCard(
+                    "Completed", userActivity!.completed.toString())),
+            const SizedBox(width: 15),
+            Expanded(
+                child: _buildStatCard(
+                    "Rank", "#${userActivity!.leaderboard}")),
+          ],
+        ),
+      ],
+    );
+  }
 
   Widget _buildStatCard(String title, String value) {
-    return Expanded(
-      child: Card(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15)),
-        elevation: 2,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 5),
-              Text(title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12)),
-            ],
-          ),
+    return Card(
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            Text(value,
+                style: const TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 5),
+            Text(title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 12)),
+          ],
         ),
       ),
     );
   }
 
-  /// 🍔 DRAWER MENU
+  /// CATEGORY GRID
+  Widget _buildCategoryGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: categories.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 15,
+        crossAxisSpacing: 15,
+        childAspectRatio: 1,
+      ),
+      itemBuilder: (context, index) {
+        final category = categories[index];
+        final ui = getCategoryUI(category.name);
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    QuizListScreen(category: category),
+              ),
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: ui["color"].withOpacity(0.1),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(color: ui["color"], width: 2),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(ui["icon"], size: 50, color: ui["color"]),
+                const SizedBox(height: 10),
+                Text(
+                  category.name,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                if (category.description != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Text(
+                      category.description!,
+                      textAlign: TextAlign.center,
+                      style:
+                          const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// DRAWER
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blueAccent),
+          DrawerHeader(
+            decoration:
+                const BoxDecoration(color: Colors.blueAccent),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.white,
                   child: Icon(Icons.person, size: 30),
                 ),
-                SizedBox(height: 10),
-                Text("Yonas",
+                const SizedBox(height: 10),
+                Text(userActivity?.name ?? "",
+                    style: const TextStyle(
+                        color: Colors.white, fontSize: 18)),
+                Text(userActivity?.level ?? "First Quiz",
                     style:
-                        TextStyle(color: Colors.white, fontSize: 18)),
-                Text("Pro Player",
-                    style: TextStyle(color: Colors.white70)),
+                        const TextStyle(color: Colors.white70)),
               ],
             ),
           ),
@@ -225,13 +315,20 @@ class HomeScreen extends StatelessWidget {
             leading: const Icon(Icons.logout, color: Colors.red),
             title: const Text("Sign Out",
                 style: TextStyle(color: Colors.red)),
-            onTap: () {
+            onTap: () async {
+              final authRepository = AuthRepository(Api());
+              await authRepository.logout();
               Navigator.pop(context);
-              // Add logout logic here
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => LoginScreen()),
+              );
             },
           ),
         ],
       ),
     );
   }
+
+
 }
