@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import '../quiz/quiz_list_screen.dart';
+import 'package:provider/provider.dart';
+import '../../provider/auth_provider.dart';
 import '../../repository/auth_repository.dart';
 import '../../services/api.dart';
 import '../../services/home_service.dart';
 import '../../model/category_model.dart';
 import '../../model/user_activity_model.dart';
 import '../auth/login_screen.dart';
-
+import '../quiz/quiz_list_screen.dart';
+import '../leaderboard/leaderboard_screen.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -113,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// USER HEADER
+
   Widget _buildUserHeader() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -142,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   userActivity!.badges.isNotEmpty
                       ? userActivity!.badges.first
-                      : "First Quiz",
+                      : "No Badges Yet",
                   style: const TextStyle(
                       color: Colors.orange,
                       fontWeight: FontWeight.bold),
@@ -155,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// STATS
+
   Widget _buildStatsSection() {
     return Column(
       children: [
@@ -268,8 +270,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// DRAWER
+
   Widget _buildDrawer(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context);
+    final user = auth.user;
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -289,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(userActivity?.name ?? "",
                     style: const TextStyle(
                         color: Colors.white, fontSize: 18)),
-                Text(userActivity?.level ?? "First Quiz",
+                Text(userActivity?.level ?? "No Badges Yet",
                     style:
                         const TextStyle(color: Colors.white70)),
               ],
@@ -308,7 +313,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ListTile(
             leading: const Icon(Icons.leaderboard),
             title: const Text("Leaderboard"),
-            onTap: () {},
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => LeaderboardScreen(currentUserId: user?.id)),
+              );
+            },
           ),
           const Divider(),
           ListTile(

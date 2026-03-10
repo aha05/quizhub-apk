@@ -241,7 +241,7 @@ class _QuizResultScreenState extends State<QuizResultScreen>
     );
   }
 
-  // ─── Stats Row ───────────────────────────────────────────────────────────────
+
   Widget _buildStatsRow() {
     return Row(
       children: [
@@ -275,7 +275,7 @@ class _QuizResultScreenState extends State<QuizResultScreen>
     );
   }
 
-  // ─── Breakdown Card ──────────────────────────────────────────────────────────
+
   Widget _buildBreakdownCard() {
     final total = widget.result.totalQuestions;
     final correct = widget.result.correctAnswers;
@@ -362,7 +362,7 @@ class _QuizResultScreenState extends State<QuizResultScreen>
     );
   }
 
-  // ─── Action Buttons ──────────────────────────────────────────────────────────
+
   Widget _buildActions() {
     final auth = Provider.of<AuthProvider>(context);
     final user = auth.user;
@@ -420,7 +420,6 @@ class _QuizResultScreenState extends State<QuizResultScreen>
   }
 }
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
   final IconData icon;
@@ -468,7 +467,6 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// ─── Breakdown Bar ────────────────────────────────────────────────────────────
 
 class _BreakdownBar extends StatelessWidget {
   final String label;
@@ -515,7 +513,6 @@ class _BreakdownBar extends StatelessWidget {
   }
 }
 
-// ─── Score Ring Painter ───────────────────────────────────────────────────────
 
 class _ScoreRingPainter extends CustomPainter {
   final double progress;

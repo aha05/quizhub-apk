@@ -7,7 +7,6 @@ import '../../model/enums.dart';
 import '../../model/user_model.dart'; 
 import 'quiz_question_screen.dart';
 import '../../services/quiz_service.dart';
-import '../../services/quiz_service.dart';
 import '../../services/api.dart';
 
 
@@ -152,7 +151,6 @@ class _QuizListScreenState extends State<QuizListScreen> {
   }
 }
 
-// ─── Quiz Card ────────────────────────────────────────────────────────────────
 
 class _QuizCard extends StatelessWidget {
   final Quiz quiz;
@@ -257,7 +255,6 @@ class _QuizCard extends StatelessWidget {
   }
 }
 
-// ─── Stat Chip ────────────────────────────────────────────────────────────────
 
 class _StatChip extends StatelessWidget {
   final IconData icon;
