@@ -1,20 +1,21 @@
-String mapErrorToMessage(String error) {
-  final Map<String, String> errorMessages = {
-    '400': "Invalid email or password.",
-    '401': "Incorrect email or password.",
-    '403': "You do not have permission to perform this action.",
-    '404': "Requested resource not found.",
-    '500': "Internal Server error. Please try again later.",
-    'SocketException': "No internet connection.",
-    'TimeoutException': "Request timed out. Try again.",
+String mapErrorToMessage(int statusCode, Map<String, dynamic>? body) {
+  final Map<int, String> errorMessages = {
+    400: "Invalid request.",
+    401: "Incorrect email or password.",
+    403: "You do not have permission to perform this action.",
+    404: "Requested resource not found.",
+    500: "Internal server error. Please try again later.",
   };
 
-  for (final key in errorMessages.keys) {
-    if (error.contains(key)) {
-      return errorMessages[key]!;
-    }
+  // If backend sends a specific message
+  if (body != null && body.containsKey('error')) {
+    return body['error'];
   }
 
-  print(error);
+  // Fallback to predefined messages
+  if (errorMessages.containsKey(statusCode)) {
+    return errorMessages[statusCode]!;
+  }
+
   return "Something went wrong. Please try again.";
 }

@@ -1,44 +1,40 @@
 import 'package:flutter/material.dart';
 import '../../repository/auth_repository.dart';
 import '../../services/api.dart';
-import '../home/home_screen.dart';
+import 'login_screen.dart';
 import '../../utils/error_mapper.dart';
 import '../../core/components/error_dialog.dart';
-import 'register_screen.dart';
 import '../../core/exceptions/api_exception.dart';
 
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
 
   final _authRepo = AuthRepository(Api());
 
-  void _login() async {
+  void _register() async {
     setState(() => _loading = true);
     try {
-      await _authRepo.login(_emailController.text, _passwordController.text);
+      await _authRepo.register(_nameController.text, _emailController.text, _passwordController.text);
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
+          MaterialPageRoute(builder: (_) => LoginScreen()),
         );
       }
     } on ApiException catch (e) {
-      String message = "";
-      if (e.statusCode != null || e.body != null){
-        message = mapErrorToMessage(e.statusCode, e.body);
-      } else {
-        message = "Something went wrong. Please try again.";
-      }
+      String message = mapErrorToMessage(e.statusCode, e.body);
       ErrorDialog.show(context, message);
     } finally {
       setState(() => _loading = false);
@@ -67,6 +63,24 @@ Widget build(BuildContext context) {
               ),
             ),
             const SizedBox(height: 30),
+
+             TextFormField( // ✅ changed
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: "Name",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please enter your name";
+                }
+                return null;
+              },
+            ),
+
+            const SizedBox(height: 15),
 
             TextFormField( // ✅ changed
               controller: _emailController,
@@ -119,7 +133,7 @@ Widget build(BuildContext context) {
                       : ElevatedButton(
                           onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        _login();
+                        _register();
                       }
                     },
                           style: ElevatedButton.styleFrom(
@@ -129,7 +143,7 @@ Widget build(BuildContext context) {
                             backgroundColor: const Color(0xFF2575FC),
                           ),
                           child: const Text(
-                            "Login",
+                            "Register",
                             style: TextStyle(
                             fontSize: 16,
                             color: Colors.white
@@ -138,15 +152,17 @@ Widget build(BuildContext context) {
                         ),
                 ),
                 TextButton(onPressed: () {
-                   Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => RegisterScreen()),
-                  );
-                }, child: Text("Don't have an account? Sign Up", style: TextStyle(color: Colors.grey))),
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => LoginScreen()),
+                    );
+                }, child: Text("Do have an account? Login", style: TextStyle(color: Colors.grey))),
           ],
+
         ),
       ),
     ),
   );
 }
+
 }

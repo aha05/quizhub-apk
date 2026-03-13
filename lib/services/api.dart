@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../repository/auth_repository.dart';
+import '../core/exceptions/api_exception.dart';
 
 
 class Api {
@@ -29,7 +30,13 @@ class Api {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Error ${response.statusCode}: ${response.body}');
+      Map<String, dynamic>? body;
+
+      try {
+        body = jsonDecode(response.body);
+      } catch (_) {}
+
+      throw ApiException(response.statusCode, body: body);
     }
   }
 
@@ -44,7 +51,13 @@ class Api {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Error ${response.statusCode}: ${response.body}');
+       Map<String, dynamic>? body;
+
+      try {
+        body = jsonDecode(response.body);
+      } catch (_) {}
+
+      throw ApiException(response.statusCode, body: body);
     }
   }
 }

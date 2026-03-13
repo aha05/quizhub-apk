@@ -19,6 +19,12 @@ class AuthRepository {
     return token;
   }
 
+  // Register 
+  Future<void> register(String name, String email, String password) async {
+    final res = await api.post('/users', {'name': name, 'email': email, 'password': password});
+  }
+
+
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();

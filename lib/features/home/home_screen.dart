@@ -9,6 +9,7 @@ import '../../model/user_activity_model.dart';
 import '../auth/login_screen.dart';
 import '../quiz/quiz_list_screen.dart';
 import '../leaderboard/leaderboard_screen.dart';
+import '../quiz/quiz_history_screen.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -308,7 +309,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ListTile(
             leading: const Icon(Icons.quiz),
             title: const Text("My Quizzes"),
-            onTap: () {},
+            onTap: () {
+                            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => QuizHistoryScreen(userId: user?.id)),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.leaderboard),
