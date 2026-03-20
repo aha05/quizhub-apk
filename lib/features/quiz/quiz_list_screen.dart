@@ -8,6 +8,8 @@ import '../../model/user_model.dart';
 import 'quiz_question_screen.dart';
 import '../../services/quiz_service.dart';
 import '../../services/api.dart';
+import '../../core/handlers/auth_handler.dart';
+import '../../core/exceptions/api_exception.dart';
 
 
 class QuizListScreen extends StatefulWidget {
@@ -41,7 +43,10 @@ class _QuizListScreenState extends State<QuizListScreen> {
         isLoading = false;
       });
 
-    } catch (e) {
+    } on ApiException catch (e) {
+      if (e.statusCode == 401){
+          AuthHandler.redirectToLogin(context, e);
+      }
       setState(() {
         error = 'Failed to load quizzes: $e';
         isLoading = false;

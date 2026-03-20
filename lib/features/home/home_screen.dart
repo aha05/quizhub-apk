@@ -10,6 +10,10 @@ import '../auth/login_screen.dart';
 import '../quiz/quiz_list_screen.dart';
 import '../leaderboard/leaderboard_screen.dart';
 import '../quiz/quiz_history_screen.dart';
+import '../profile/profile_screen.dart';
+import '../../core/handlers/auth_handler.dart';
+import '../../core/exceptions/api_exception.dart';
+
 
 
 class HomeScreen extends StatefulWidget {
@@ -46,7 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
         userActivity = results[1] as UserActivity;
         isLoading = false;
       });
-    } catch (e) {
+    } on ApiException catch (e) {
+      if (e.statusCode == 401){
+           AuthHandler.redirectToLogin(context, e);
+      }
       setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to load data")),
@@ -304,16 +311,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text("Profile"),
-            onTap: () {},
+            onTap: () {
+              if(user != null){
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => ProfileScreen(userId: user.id, email: user.email)),
+                );
+              }
+            },
           ),
           ListTile(
             leading: const Icon(Icons.quiz),
             title: const Text("My Quizzes"),
             onTap: () {
-                            Navigator.pushReplacement(
+              if(user != null){
+              Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => QuizHistoryScreen(userId: user?.id)),
+                MaterialPageRoute(builder: (_) => QuizHistoryScreen(userId: user.id)),
               );
+              }
+              
             },
           ),
           ListTile(

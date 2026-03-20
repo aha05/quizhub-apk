@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../model/leaderboard_model.dart';
 import '../../services/leaderboard_service.dart';
 import '../../services/api.dart';
+import '../../core/handlers/auth_handler.dart';
+import '../../core/exceptions/api_exception.dart';
 
 
 class LeaderboardScreen extends StatefulWidget {
@@ -36,7 +38,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       });
 
       await Future.delayed(const Duration(seconds: 1));
-    } catch (e) {
+    } on ApiException catch (e) {
+      if (e.statusCode == 401){
+           AuthHandler.redirectToLogin(context, e);
+      }
       setState(() {
         error = 'Failed to load leaderboard: $e';
         isLoading = false;

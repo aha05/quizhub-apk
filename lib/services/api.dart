@@ -24,10 +24,44 @@ class Api {
     final response = await http.post(
       Uri.parse('$baseUrl$path'),
       headers: headers,
-      body: jsonEncode(body),
+      body: jsonEncode(body ?? {}),
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.body.isEmpty) {
+        return {};
+      }
+      return jsonDecode(response.body);
+    } else {
+      Map<String, dynamic>? body;
+
+      try {
+        body = jsonDecode(response.body);
+      } catch (_) {}
+
+      throw ApiException(response.statusCode, body: body);
+    }
+  }
+
+  Future<Map<String, dynamic>> put(String path, Map<String, dynamic> body, {bool useToken = true}) async {
+    final headers = {'Content-Type': 'application/json'};
+    
+    if (useToken) {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(AuthRepository.TOKEN_KEY);
+      if (token != null) headers['Authorization'] = 'Bearer $token';
+    }
+
+    final response = await http.put(
+      Uri.parse('$baseUrl$path'),
+      headers: headers,
+      body: jsonEncode(body ?? {}),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.body.isEmpty) {
+        return {};
+      }
       return jsonDecode(response.body);
     } else {
       Map<String, dynamic>? body;
@@ -51,7 +85,7 @@ class Api {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body);
     } else {
-       Map<String, dynamic>? body;
+      Map<String, dynamic>? body;
 
       try {
         body = jsonDecode(response.body);

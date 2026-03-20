@@ -3,6 +3,10 @@ import '../../model/quiz_history_model.dart';
 import '../../model/quiz_model.dart';
 import '../../model/question_model.dart';
 import '../../model/option_model.dart';
+import '../../services/question_service.dart';
+import '../../services/api.dart';
+import '../../core/handlers/auth_handler.dart';
+import '../../core/exceptions/api_exception.dart';
 
 
 class QuizReviewScreen extends StatefulWidget {
@@ -15,6 +19,7 @@ class QuizReviewScreen extends StatefulWidget {
 }
 
 class _QuizReviewScreenState extends State<QuizReviewScreen> {
+  final QuestionService _questionService = QuestionService(Api());
   bool isLoadingQuestions = true;
   String? error;
   List<Question> questions = [];
@@ -27,45 +32,59 @@ class _QuizReviewScreenState extends State<QuizReviewScreen> {
 
   Future<void> _fetchQuestions() async {
     try {
-      // TODO: Replace with actual API call
-      // final dynamic response = await api.get('/quiz/${widget.history.quizId}/questions');
-      // final List<dynamic> list = response as List<dynamic>;
-      // questions = list.map((e) => Question.fromJson(e as Map<String, dynamic>)).toList();
+      try {
+      final results = await _questionService.fetchQuestions(widget.history.quizId);
+      
+      setState(() {
+        questions = results as List<Question>;
+        isLoadingQuestions = false;
+      });
+
+      await Future.delayed(const Duration(seconds: 1));
+    } on ApiException catch (e) {
+      if (e.statusCode == 401){
+           AuthHandler.redirectToLogin(context, e);
+      }
+      setState(() {
+        error = 'Failed to load questions: $e';
+        isLoadingQuestions = false;
+      });
+    }
 
       await Future.delayed(const Duration(seconds: 1));
 
       // Mock data — remove when API is ready
-      final mockJson = [
-        {
-          'id': 1,
-          'content': 'What is the correct way to declare a variable in Dart?',
-          'type': 'SINGLE',
-          'options': [
-            {'id': 1, 'text': 'var name = "John";', 'correct': true},
-            {'id': 2, 'text': 'variable name = "John";', 'correct': false},
-            {'id': 3, 'text': 'let name = "John";', 'correct': false},
-            {'id': 4, 'text': 'dim name = "John";', 'correct': false},
-          ],
-        },
-        {
-          'id': 2,
-          'content': 'What is the correct way to declare a variable in Dart?',
-          'type': 'MULTIPLE',
-          'options': [
-            {'id': 5, 'text': 'var name = "John";', 'correct': true},
-            {'id': 6, 'text': 'variable name = "John";', 'correct': true},
-            {'id': 7, 'text': 'let name = "John";', 'correct': false},
-            {'id': 8, 'text': 'dim name = "John";', 'correct': false},
-          ],
-        },
-      ];
+      // final mockJson = [
+      //   {
+      //     'id': 1,
+      //     'content': 'What is the correct way to declare a variable in Dart?',
+      //     'type': 'SINGLE',
+      //     'options': [
+      //       {'id': 1, 'text': 'var name = "John";', 'correct': true},
+      //       {'id': 2, 'text': 'variable name = "John";', 'correct': false},
+      //       {'id': 3, 'text': 'let name = "John";', 'correct': false},
+      //       {'id': 4, 'text': 'dim name = "John";', 'correct': false},
+      //     ],
+      //   },
+      //   {
+      //     'id': 2,
+      //     'content': 'What is the correct way to declare a variable in Dart?',
+      //     'type': 'MULTIPLE',
+      //     'options': [
+      //       {'id': 5, 'text': 'var name = "John";', 'correct': true},
+      //       {'id': 6, 'text': 'variable name = "John";', 'correct': true},
+      //       {'id': 7, 'text': 'let name = "John";', 'correct': false},
+      //       {'id': 8, 'text': 'dim name = "John";', 'correct': false},
+      //     ],
+      //   },
+      // ];
 
-      setState(() {
-        questions = mockJson
-            .map((e) => Question.fromJson(e as Map<String, dynamic>))
-            .toList();
-        isLoadingQuestions = false;
-      });
+      // setState(() {
+      //   questions = mockJson
+      //       .map((e) => Question.fromJson(e as Map<String, dynamic>))
+      //       .toList();
+      //   isLoadingQuestions = false;
+      // });
     } catch (e) {
       setState(() {
         error = 'Failed to load questions: $e';

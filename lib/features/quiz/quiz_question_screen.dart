@@ -11,6 +11,8 @@ import '../../model/submit_answer_payload.dart';
 import '../../model/answer_payload.dart';
 import '../../model/enums.dart';
 import '../../model/quiz_result_model.dart';
+import '../../core/handlers/auth_handler.dart';
+import '../../core/exceptions/api_exception.dart';
 
 
 class QuizQuestionScreen extends StatefulWidget {
@@ -66,7 +68,10 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
 
       await Future.delayed(const Duration(seconds: 1));
       _startTimer();
-    } catch (e) {
+    } on ApiException catch (e) {
+      if (e.statusCode == 401){
+           AuthHandler.redirectToLogin(context, e);
+      }
       setState(() {
         loadError = 'Failed to load questions: $e';
         isLoadingQuestions = false;

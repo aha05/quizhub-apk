@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import '../../model/quiz_model.dart';
 import '../../model/quiz_history_model.dart';
 import 'quiz_review_screen.dart';
+import '../../services/quiz_history_service.dart';
+import '../../services/api.dart';
+import '../../core/exceptions/api_exception.dart';
+
 
 class QuizHistoryScreen extends StatefulWidget {
-  final int? userId;
+  final int userId;
 
   const QuizHistoryScreen({super.key, required this.userId});
 
@@ -13,6 +17,7 @@ class QuizHistoryScreen extends StatefulWidget {
 }
 
 class _QuizHistoryScreenState extends State<QuizHistoryScreen> {
+  final QuizHistoryService _quizHistoryService = QuizHistoryService(Api());
   bool isLoading = true;
   String? error;
   List<QuizHistory> history = [];
@@ -24,54 +29,17 @@ class _QuizHistoryScreenState extends State<QuizHistoryScreen> {
   }
 
   Future<void> _fetchHistory() async {
-    try {
-      // TODO: Replace with actual API call
-      // final dynamic response = await api.get('/quiz/history/${widget.userId}');
-      // final List<dynamic> list = response as List<dynamic>;
-      // history = list.map((e) => QuizHistory.fromJson(e as Map<String, dynamic>)).toList();
-
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Mock data — remove when API is ready
-      final mockJson = [
-        {
-          'id': 1,
-          'quizId': 1,
-          'quizTitle': 'JavaScript Fundamental',
-          'totalQuestions': 1,
-          'correctAnswers': 1,
-          'scorePercentage': 100,
-          'quizCategory': 'Programming',
-          'passed': true,
-          'submittedAt': '2026-03-05T14:43:02.357798',
-          'timeTaken': 50,
-          'answers': [
-            {'questionId': 1, 'selectedOptionIds': [2]}
-          ],
-        },
-        {
-          'id': 2,
-          'quizId': 2,
-          'quizTitle': 'Dart Basics',
-          'totalQuestions': 5,
-          'correctAnswers': 3,
-          'scorePercentage': 60,
-          'quizCategory': 'Programming',
-          'passed': false,
-          'submittedAt': '2026-03-06T10:20:00.000000',
-          'timeTaken': 180,
-          'answers': [
-            {'questionId': 2, 'selectedOptionIds': [5, 6]},
-            {'questionId': 3, 'selectedOptionIds': [9]},
-          ],
-        },
-      ];
-
+   
+      try {
+      final results = await _quizHistoryService.fetchQuizHistory(widget.userId);
+      
       setState(() {
-        history = mockJson.map((e) => QuizHistory.fromJson(e)).toList();
+        history = results as List<QuizHistory>;
         isLoading = false;
       });
-    } catch (e) {
+
+      await Future.delayed(const Duration(seconds: 1));
+    } on ApiException catch (e) {
       setState(() {
         error = 'Failed to load history: $e';
         isLoading = false;
@@ -164,7 +132,6 @@ class _QuizHistoryScreenState extends State<QuizHistoryScreen> {
   }
 }
 
-// ─── History Card ─────────────────────────────────────────────────────────────
 
 class _HistoryCard extends StatelessWidget {
   final QuizHistory history;
