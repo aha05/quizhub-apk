@@ -53,38 +53,6 @@ class _QuizReviewScreenState extends State<QuizReviewScreen> {
 
       await Future.delayed(const Duration(seconds: 1));
 
-      // Mock data — remove when API is ready
-      // final mockJson = [
-      //   {
-      //     'id': 1,
-      //     'content': 'What is the correct way to declare a variable in Dart?',
-      //     'type': 'SINGLE',
-      //     'options': [
-      //       {'id': 1, 'text': 'var name = "John";', 'correct': true},
-      //       {'id': 2, 'text': 'variable name = "John";', 'correct': false},
-      //       {'id': 3, 'text': 'let name = "John";', 'correct': false},
-      //       {'id': 4, 'text': 'dim name = "John";', 'correct': false},
-      //     ],
-      //   },
-      //   {
-      //     'id': 2,
-      //     'content': 'What is the correct way to declare a variable in Dart?',
-      //     'type': 'MULTIPLE',
-      //     'options': [
-      //       {'id': 5, 'text': 'var name = "John";', 'correct': true},
-      //       {'id': 6, 'text': 'variable name = "John";', 'correct': true},
-      //       {'id': 7, 'text': 'let name = "John";', 'correct': false},
-      //       {'id': 8, 'text': 'dim name = "John";', 'correct': false},
-      //     ],
-      //   },
-      // ];
-
-      // setState(() {
-      //   questions = mockJson
-      //       .map((e) => Question.fromJson(e as Map<String, dynamic>))
-      //       .toList();
-      //   isLoadingQuestions = false;
-      // });
     } catch (e) {
       setState(() {
         error = 'Failed to load questions: $e';

@@ -7,6 +7,7 @@ import '../../core/handlers/auth_handler.dart';
 import '../../core/exceptions/api_exception.dart';
 import '../../services/api.dart';
 
+
 class ProfileScreen extends StatefulWidget {
   final int userId;
   final String email;
@@ -72,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 await _userService.updateProfile(name, email);
 
                 if (!mounted) return;
-                
+
                 ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Profile updated successfully')),
                 );
@@ -211,7 +212,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ─── Profile Card ─────────────────────────────────────────────────────────────
   Widget _buildProfileCard() {
     final a = activity!;
     return Container(
@@ -330,7 +330,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ─── Stats Grid ───────────────────────────────────────────────────────────────
   Widget _buildStatsGrid() {
     final a = activity!;
     return Column(
@@ -382,7 +381,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ─── Badges Card ──────────────────────────────────────────────────────────────
   Widget _buildBadgesCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -437,7 +435,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ─── Settings Card ────────────────────────────────────────────────────────────
   Widget _buildSettingsCard() {
     return Container(
       decoration: BoxDecoration(
@@ -471,8 +468,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
-// ─── Stat Tile ────────────────────────────────────────────────────────────────
 
 class _StatTile extends StatelessWidget {
   final IconData icon;
@@ -541,8 +536,6 @@ class _StatTile extends StatelessWidget {
   }
 }
 
-// ─── Settings Tile ────────────────────────────────────────────────────────────
-
 class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -582,8 +575,6 @@ class _SettingsTile extends StatelessWidget {
     );
   }
 }
-
-// ─── Edit Profile Bottom Sheet ────────────────────────────────────────────────
 
 class _EditProfileSheet extends StatefulWidget {
   final String currentName;
@@ -671,8 +662,6 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     );
   }
 }
-
-// ─── Change Password Bottom Sheet ─────────────────────────────────────────────
 
 class _ChangePasswordSheet extends StatefulWidget {
   final Future<void> Function(String current, String newPass) onSaved;
@@ -771,8 +760,6 @@ class _ChangePasswordSheetState extends State<_ChangePasswordSheet> {
   }
 }
 
-// ─── Shared Sheet Wrapper ─────────────────────────────────────────────────────
-
 class _BottomSheet extends StatelessWidget {
   final String title;
   final Widget child;
@@ -816,8 +803,6 @@ class _BottomSheet extends StatelessWidget {
     );
   }
 }
-
-// ─── Shared Input Field ───────────────────────────────────────────────────────
 
 class _InputField extends StatelessWidget {
   final TextEditingController controller;
@@ -881,8 +866,6 @@ class _InputField extends StatelessWidget {
     );
   }
 }
-
-// ─── Save Button ──────────────────────────────────────────────────────────────
 
 class _SaveButton extends StatelessWidget {
   final Future<void> Function() onPressed;

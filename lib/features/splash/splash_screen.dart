@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/gradients.dart';
-import '../auth/login_screen.dart';
+import '../auth/presentation/pages/login_screen.dart';
 
 
 class SplashScreen extends StatefulWidget {
