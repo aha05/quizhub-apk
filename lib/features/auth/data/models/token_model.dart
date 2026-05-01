@@ -1,10 +1,15 @@
 class TokenModel {
   final String access;
-  final String refresh;
 
-  TokenModel({required this.access, required this.refresh});
+  TokenModel({required this.access});
 
   factory TokenModel.fromJson(Map<String, dynamic> json) {
-    return TokenModel(access: json['access'], refresh: json['refresh']);
+    final access = json['token'] ?? json['access'];
+
+    if (access == null) {
+      throw FormatException('Access token missing from response');
+    }
+
+    return TokenModel(access: access);
   }
 }

@@ -12,8 +12,6 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onRequest(options, handler) async {
-    print("new request!");
-
     final token = await tokenManager.getAccessToken();
 
     if (token != null) {
@@ -25,37 +23,35 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, handler) async {
-    if (err.response?.statusCode == 401 && !_isRefreshing) {
+    if (err.response?.statusCode == 401 &&
+        !_isRefreshing &&
+        err.requestOptions.path != ApiEndpoints.refresh) {
       _isRefreshing = true;
 
-      final refreshToken = await tokenManager.getRefreshToken();
+      try {
+        final response = await dio.post(ApiEndpoints.refresh);
 
-      if (refreshToken != null) {
-        try {
-          final response = await dio.post(
-            ApiEndpoints.refresh,
-            data: {"refresh": refreshToken},
+        final newAccess = response.data['token'] ?? response.data['access'];
+
+        if (newAccess == null) {
+          throw DioException(
+            requestOptions: err.requestOptions,
+            error: 'Access token missing from refresh response',
           );
-
-          final newAccess = response.data['access'];
-          final newRefresh = response.data['refresh'];
-
-          await tokenManager.saveTokens(
-            accessToken: newAccess,
-            refreshToken: newRefresh,
-          );
-
-          final request = err.requestOptions;
-          request.headers['Authorization'] = 'Bearer $newAccess';
-
-          final retryResponse = await dio.fetch(request);
-
-          _isRefreshing = false;
-          return handler.resolve(retryResponse);
-        } catch (e) {
-          _isRefreshing = false;
-          await tokenManager.clearTokens();
         }
+
+        await tokenManager.saveAccessToken(accessToken: newAccess);
+
+        final request = err.requestOptions;
+        request.headers['Authorization'] = 'Bearer $newAccess';
+
+        final retryResponse = await dio.fetch(request);
+
+        _isRefreshing = false;
+        return handler.resolve(retryResponse);
+      } catch (e) {
+        _isRefreshing = false;
+        await tokenManager.clearTokens();
       }
     }
 

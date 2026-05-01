@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:quizhub/features/home/domain/entities/category.dart';
 import '../../provider/auth_provider.dart';
 import '../../model/quiz_model.dart';
-import '../../model/category_model.dart';
 import '../../model/enums.dart'; 
 import '../../model/user_model.dart'; 
 import 'quiz_question_screen.dart';

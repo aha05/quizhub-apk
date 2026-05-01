@@ -6,7 +6,7 @@ import 'package:quizhub/core/utils/show_snackbar.dart';
 import 'package:quizhub/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:quizhub/features/auth/presentation/widgets/auth_field.dart';
 import 'package:quizhub/features/auth/presentation/widgets/auth_gradient_button.dart';
-import 'package:quizhub/features/home/home_screen.dart';
+import 'package:quizhub/features/home/presentation/screens/home_screen.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {

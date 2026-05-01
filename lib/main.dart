@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:quizhub/core/common/cubits/app_user/cubit/app_user_cubit.dart';
+import 'package:quizhub/core/common/widgets/loader.dart';
 import 'package:quizhub/core/theme/app_theme.dart';
 import 'package:quizhub/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:quizhub/features/auth/presentation/pages/login_screen.dart';
-import 'package:quizhub/features/home/home_screen.dart';
+import 'package:quizhub/features/auth/presentation/screens/login_screen.dart';
+import 'package:quizhub/features/home/presentation/bloc/home_bloc.dart';
+import 'package:quizhub/features/home/presentation/screens/home_screen.dart';
 import 'package:quizhub/init_dependencies.dart';
 
 void main() async {
@@ -17,9 +19,7 @@ void main() async {
       providers: [
         BlocProvider(create: (_) => serviceLocator<AppUserCubit>()),
         BlocProvider(create: (_) => serviceLocator<AuthBloc>()),
-        // BlocProvider(
-        //   create: (_) => serviceLocator<BlogBloc>(),
-        // ),
+        BlocProvider(create: (_) => serviceLocator<HomeBloc>()),
       ],
       child: const MyApp(),
     ),
@@ -44,17 +44,33 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Blog App',
+      title: 'Quiz-Hub',
       theme: AppTheme.lightTheme,
-      home: BlocSelector<AppUserCubit, AppUserState, bool>(
-        selector: (state) {
-          return state is AppUserLoggedIn;
-        },
-        builder: (context, isLoggedIn) {
-          if (isLoggedIn) {
+      home: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, authState) {
+          if (authState is AuthInitial || authState is AuthLoading) {
+            return const Scaffold(body: Loader());
+          }
+
+          if (authState is AuthSuccess) {
             return const HomeScreen();
           }
-          return const LoginScreen();
+
+          if (authState is AuthFailure || authState is AuthLogoutSuccess) {
+            return const LoginScreen();
+          }
+
+          return BlocSelector<AppUserCubit, AppUserState, bool>(
+            selector: (state) {
+              return state is AppUserLoggedIn;
+            },
+            builder: (context, isLoggedIn) {
+              if (isLoggedIn) {
+                return const HomeScreen();
+              }
+              return const LoginScreen();
+            },
+          );
         },
       ),
     );

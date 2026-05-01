@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'quiz_question_screen.dart';
-import '../home/home_screen.dart';
+import '../home/presentation/screens/home_screen.dart';
 import '../../model/quiz_model.dart';
 import '../../model/quiz_result_model.dart';
 import '../../provider/auth_provider.dart';

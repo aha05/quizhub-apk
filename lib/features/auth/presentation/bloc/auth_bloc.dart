@@ -2,9 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizhub/core/common/cubits/app_user/cubit/app_user_cubit.dart';
-import 'package:quizhub/core/common/entities/user.dart';
 import 'package:quizhub/core/usecase/usecase.dart';
 import 'package:quizhub/features/auth/domain/usecases/auth_login.dart';
+import 'package:quizhub/features/auth/domain/usecases/auth_logout.dart';
 import 'package:quizhub/features/auth/domain/usecases/auth_signup.dart';
 import 'package:quizhub/features/auth/domain/usecases/current_user.dart';
 
@@ -14,16 +14,19 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserLogin _userLogin;
   final UserSignUp _userSignUp;
+  final UserLogout _userLogout;
   final CurrentUser _currentUser;
   final AppUserCubit _appUserCubit;
 
   AuthBloc({
     required UserLogin userLogin,
     required UserSignUp userSignUp,
+    required UserLogout userLogout,
     required CurrentUser currentUser,
     required AppUserCubit appUserCubit,
   }) : _userLogin = userLogin,
        _userSignUp = userSignUp,
+       _userLogout = userLogout,
        _appUserCubit = appUserCubit,
        _currentUser = currentUser,
        super(AuthInitial()) {
@@ -31,6 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogin>(_onAuthLogin);
     on<AuthSignUp>(_onAuthSignUp);
     on<AuthIsUserLoggedIn>(_isUserLoggedIn);
+    on<AuthLogout>(_onAuthLogout);
   }
 
   void _isUserLoggedIn(
@@ -50,10 +54,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UserLoginParams(email: event.email, password: event.password),
     );
 
-    res.fold(
-      (l) => emit(AuthFailure(l.message)),
-      (_) => _emitAuthSuccess(emit),
-    );
+    await res.fold((l) async => emit(AuthFailure(l.message)), (_) async {
+      final currentUserRes = await _currentUser(NoParams());
+
+      currentUserRes.fold((l) => emit(AuthFailure(l.message)), (user) {
+        _appUserCubit.updateUser(user);
+        _emitAuthSuccess(emit);
+      });
+    });
   }
 
   void _onAuthSignUp(AuthSignUp event, Emitter<AuthState> emit) async {
@@ -69,6 +77,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (failure) => emit(AuthFailure(failure.message)),
       (_) => _emitAuthSuccess(emit),
     );
+  }
+
+  void _onAuthLogout(AuthLogout event, Emitter<AuthState> emit) async {
+    final res = await _userLogout(NoParams());
+
+    res.fold((failure) => emit(AuthFailure(failure.message)), (_) {
+      _appUserCubit.updateUser(null);
+      emit(AuthLogoutSuccess());
+    });
   }
 
   void _emitAuthSuccess(Emitter<AuthState> emit) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../exceptions/api_exception.dart';
-import '../../features/auth/presentation/pages/login_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
 
 class AuthHandler {
 

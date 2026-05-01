@@ -4,6 +4,7 @@ import 'package:quizhub/features/auth/data/models/user_model.dart';
 
 abstract interface class AuthRemoteDataSource {
   Future<TokenModel> login({required String email, required String password});
+  Future<void> logout();
   Future<UserModel> signUp({
     required String name,
     required String email,

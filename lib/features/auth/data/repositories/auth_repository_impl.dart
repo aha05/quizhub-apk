@@ -1,6 +1,8 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:quizhub/core/common/entities/user.dart';
+import 'package:quizhub/core/error/api_error_mapper.dart';
 import 'package:quizhub/core/error/failures.dart';
+import 'package:quizhub/core/exceptions/api_exception.dart';
 import 'package:quizhub/core/network/connection_checker.dart';
 import 'package:quizhub/core/storage/token_manager.dart';
 import 'package:quizhub/features/auth/data/datasources/auth_remote_datasource.dart';
@@ -19,25 +21,32 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Unit>> logout() async {
-    await tokenManager.clearTokens();
-    return const Right(unit);
+    if (!await connectionChecker.isConnected) {
+      return Left(Failure('No internet connection'));
+    }
+
+    try {
+      await remote.logout();
+      await tokenManager.clearTokens();
+      return const Right(unit);
+    } on ApiException catch (e) {
+      return Left(Failure(ApiErrorMapper.message(e.statusCode)));
+    } catch (e) {
+      return Left(Failure(e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, User>> currentUser() async {
     try {
-      final accessToken = await tokenManager.getAccessToken();
-
-      if (accessToken == null || accessToken.isEmpty) {
-        return Left(Failure('User is not authenticated'));
-      }
-
       if (!await connectionChecker.isConnected) {
         return Left(Failure('No internet connection'));
       }
 
       final user = await remote.currentUser();
       return right(user);
+    } on ApiException catch (e) {
+      return Left(Failure(ApiErrorMapper.message(e.statusCode)));
     } catch (e) {
       return Left(Failure(e.toString()));
     }
@@ -53,14 +62,13 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
-      final tokens = await remote.login(email: email, password: password);
+      final token = await remote.login(email: email, password: password);
 
-      await tokenManager.saveTokens(
-        accessToken: tokens.access,
-        refreshToken: tokens.refresh,
-      );
+      await tokenManager.saveAccessToken(accessToken: token.access);
 
       return const Right(unit);
+    } on ApiException catch (e) {
+      return Left(Failure(ApiErrorMapper.message(e.statusCode)));
     } catch (e) {
       return Left(Failure(e.toString()));
     }
@@ -84,6 +92,8 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       return right(user);
+    } on ApiException catch (e) {
+      return Left(Failure(ApiErrorMapper.message(e.statusCode)));
     } catch (e) {
       return Left(Failure(e.toString()));
     }

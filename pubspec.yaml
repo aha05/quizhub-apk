@@ -23,6 +23,8 @@ dependencies:
   internet_connection_checker_plus: ^2.9.1+2
   dio: ^5.9.2
   get_it: ^9.2.1
+  dio_cookie_manager: ^3.4.0
+  cookie_jar: ^4.0.9
 
 dev_dependencies:
   flutter_test:

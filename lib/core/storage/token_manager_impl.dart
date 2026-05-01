@@ -7,26 +7,17 @@ class TokenManagerImpl implements TokenManager {
   TokenManagerImpl(this.storage);
 
   static const _accessKey = 'ACCESS_TOKEN';
-  static const _refreshKey = 'REFRESH_TOKEN';
 
   @override
   Future<String?> getAccessToken() => storage.read(_accessKey);
 
   @override
-  Future<String?> getRefreshToken() => storage.read(_refreshKey);
-
-  @override
-  Future<void> saveTokens({
-    required String accessToken,
-    required String refreshToken,
-  }) async {
+  Future<void> saveAccessToken({required String accessToken}) async {
     await storage.write(_accessKey, accessToken);
-    await storage.write(_refreshKey, refreshToken);
   }
 
   @override
   Future<void> clearTokens() async {
     await storage.delete(_accessKey);
-    await storage.delete(_refreshKey);
   }
 }
