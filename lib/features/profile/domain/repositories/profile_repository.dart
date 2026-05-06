@@ -4,7 +4,7 @@ import 'package:quizhub/features/profile/domain/entities/profile_activity.dart';
 import 'package:quizhub/features/profile/domain/entities/user_profile.dart';
 
 abstract interface class ProfileRepository {
-  Future<Either<Failure, ProfileActivity>> fetchProfileActivity();
+  Future<Either<Failure, ProfileActivity>> profileActivity();
 
   Future<Either<Failure, UserProfile>> updateProfile({
     required String name,

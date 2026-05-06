@@ -1,12 +1,11 @@
 part of 'init_dependencies.dart';
 
-final serviceLocator = GetIt.instance;
-
 Future<void> initDependencies() async {
   _initAuth();
   _initHome();
   _initLeaderboard();
   _initProfile();
+  initQuizDependencies(serviceLocator);
 
   serviceLocator.registerFactory(() => InternetConnection());
 
@@ -90,12 +89,12 @@ void _initProfile() {
     ..registerFactory<ProfileRepository>(
       () => ProfileRepositoryImpl(serviceLocator(), serviceLocator()),
     )
-    ..registerFactory(() => FetchProfileActivity(serviceLocator()))
+    ..registerFactory(() => GetProfileActivity(serviceLocator()))
     ..registerFactory(() => UpdateProfile(serviceLocator()))
     ..registerFactory(() => ChangePassword(serviceLocator()))
     ..registerFactory(
       () => ProfileBloc(
-        fetchProfileActivity: serviceLocator(),
+        getProfileActivity: serviceLocator(),
         updateProfile: serviceLocator(),
         changePassword: serviceLocator(),
       ),

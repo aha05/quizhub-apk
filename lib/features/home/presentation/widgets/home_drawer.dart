@@ -7,7 +7,7 @@ import 'package:quizhub/features/home/presentation/utils/home_presentation_const
 import 'package:quizhub/features/home/presentation/utils/home_user_session.dart';
 import 'package:quizhub/features/leaderboard/leaderboard_screen.dart';
 import 'package:quizhub/features/profile/profile_screen.dart';
-import 'package:quizhub/features/quiz/quiz_history_screen.dart';
+import 'package:quizhub/features/quiz/presentation/quiz_history/screens/quiz_history_screen.dart';
 
 class HomeDrawer extends StatelessWidget {
   final UserActivity userActivity;
@@ -62,7 +62,7 @@ class HomeDrawer extends StatelessWidget {
               final userId = HomeUserSession.userId(currentUser);
 
               if (currentUser != null && userId != null) {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
@@ -85,7 +85,7 @@ class HomeDrawer extends StatelessWidget {
               final userId = HomeUserSession.userId(currentUser);
 
               if (currentUser != null && userId != null) {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => QuizHistoryScreen(userId: userId),
@@ -104,8 +104,7 @@ class HomeDrawer extends StatelessWidget {
             title: const Text("Leaderboard"),
             onTap: () {
               final userId = HomeUserSession.userId(user);
-
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => LeaderboardScreen(currentUserId: userId),

@@ -15,7 +15,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   const ProfileRepositoryImpl(this.connectionChecker, this.remote);
 
   @override
-  Future<Either<Failure, ProfileActivity>> fetchProfileActivity() async {
+  Future<Either<Failure, ProfileActivity>> profileActivity() async {
     if (!await connectionChecker.isConnected) {
       return Left(Failure('No internet connection'));
     }

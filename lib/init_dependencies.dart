@@ -1,6 +1,6 @@
-import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:quizhub/core/common/cubits/app_user/cubit/app_user_cubit.dart';
+import 'package:quizhub/core/di/service_locator.dart';
 import 'package:quizhub/core/network/api_service.dart';
 import 'package:quizhub/core/network/connection_checker.dart';
 import 'package:quizhub/core/storage/secure_storage.dart';
@@ -32,8 +32,9 @@ import 'package:quizhub/features/profile/data/datasources/profile_remote_datasou
 import 'package:quizhub/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:quizhub/features/profile/domain/repositories/profile_repository.dart';
 import 'package:quizhub/features/profile/domain/usecases/change_password.dart';
-import 'package:quizhub/features/profile/domain/usecases/fetch_profile_activity.dart';
+import 'package:quizhub/features/profile/domain/usecases/get_profile_activity.dart';
 import 'package:quizhub/features/profile/domain/usecases/update_profile.dart';
 import 'package:quizhub/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:quizhub/features/quiz/init_quiz_dependencies.dart';
 
 part 'init_dependencies.main.dart';

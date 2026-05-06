@@ -3,22 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizhub/core/usecase/usecase.dart';
 import 'package:quizhub/features/profile/domain/entities/profile_activity.dart';
 import 'package:quizhub/features/profile/domain/usecases/change_password.dart';
-import 'package:quizhub/features/profile/domain/usecases/fetch_profile_activity.dart';
+import 'package:quizhub/features/profile/domain/usecases/get_profile_activity.dart';
 import 'package:quizhub/features/profile/domain/usecases/update_profile.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  final FetchProfileActivity _fetchProfileActivity;
+  final GetProfileActivity _getProfileActivity;
   final UpdateProfile _updateProfile;
   final ChangePassword _changePassword;
 
   ProfileBloc({
-    required FetchProfileActivity fetchProfileActivity,
+    required GetProfileActivity getProfileActivity,
     required UpdateProfile updateProfile,
     required ChangePassword changePassword,
-  }) : _fetchProfileActivity = fetchProfileActivity,
+  }) : _getProfileActivity = getProfileActivity,
        _updateProfile = updateProfile,
        _changePassword = changePassword,
        super(ProfileInitial()) {
@@ -33,7 +33,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     emit(ProfileLoading());
 
-    final result = await _fetchProfileActivity(NoParams());
+    final result = await _getProfileActivity(NoParams());
 
     result.fold(
       (failure) => emit(ProfileFailure(failure.message)),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quizhub/core/di/service_locator.dart';
 import 'package:quizhub/core/utils/show_snackbar.dart';
 import 'package:quizhub/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:quizhub/features/profile/presentation/utils/profile_presentation_constants.dart';
@@ -7,7 +8,7 @@ import 'package:quizhub/features/profile/presentation/widgets/change_password_sh
 import 'package:quizhub/features/profile/presentation/widgets/edit_profile_sheet.dart';
 import 'package:quizhub/features/profile/presentation/widgets/profile_content.dart';
 import 'package:quizhub/features/profile/presentation/widgets/profile_error_view.dart';
-import 'package:quizhub/init_dependencies.dart';
+
 
 class ProfileScreen extends StatelessWidget {
   final int userId;

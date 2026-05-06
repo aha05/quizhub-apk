@@ -19,4 +19,12 @@ class ApiEndpoints {
   // ? profile
   static const updateProfile = '/users/update/profile';
   static String changePassword(int userId) => '/users/$userId/change-password';
+
+  // ? quiz
+  static String quizzesByCategory(int categoryId) =>
+      '/quiz/category/$categoryId';
+  static String submitQuiz(int quizId) => '/quiz/$quizId/submit';
+  static String quizQuestions(int quizId) => '/quiz/$quizId/questions';
+  static String quizResults(int quizId) => '/quiz/$quizId/results';
+  static String quizHistory = '/user-activity/history';
 }

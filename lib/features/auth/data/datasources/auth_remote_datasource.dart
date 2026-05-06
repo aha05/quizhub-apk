@@ -1,4 +1,3 @@
-import 'package:quizhub/core/common/entities/user.dart';
 import 'package:quizhub/features/auth/data/models/token_model.dart';
 import 'package:quizhub/features/auth/data/models/user_model.dart';
 

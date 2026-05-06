@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quizhub/core/di/service_locator.dart';
 import 'package:quizhub/features/leaderboard/presentation/bloc/leaderboard_bloc.dart';
 import 'package:quizhub/features/leaderboard/presentation/utils/leaderboard_presentation_constants.dart';
 import 'package:quizhub/features/leaderboard/presentation/widgets/leaderboard_content.dart';
 import 'package:quizhub/features/leaderboard/presentation/widgets/leaderboard_error_view.dart';
-import 'package:quizhub/init_dependencies.dart';
 
 class LeaderboardScreen extends StatelessWidget {
   final int? currentUserId;

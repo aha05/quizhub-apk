@@ -1,0 +1,19 @@
+import 'package:get_it/get_it.dart';
+import 'package:quizhub/features/quiz/data/datasources/question_remote_data_source.dart';
+import 'package:quizhub/features/quiz/data/datasources/question_remote_data_source_impl.dart';
+import 'package:quizhub/features/quiz/data/datasources/quiz_history_remote_data_source.dart';
+import 'package:quizhub/features/quiz/data/datasources/quiz_history_remote_data_source_impl.dart';
+import 'package:quizhub/features/quiz/data/datasources/quiz_remote_data_source.dart';
+import 'package:quizhub/features/quiz/data/datasources/quiz_remote_data_source_impl.dart';
+import 'package:quizhub/features/quiz/data/repositories/quiz_repository_impl.dart';
+import 'package:quizhub/features/quiz/domain/repositories/quiz_repository.dart';
+import 'package:quizhub/features/quiz/domain/usecases/questions.dart';
+import 'package:quizhub/features/quiz/domain/usecases/quiz_history.dart';
+import 'package:quizhub/features/quiz/domain/usecases/quizzes.dart';
+import 'package:quizhub/features/quiz/domain/usecases/submit_quiz_answers.dart';
+import 'package:quizhub/features/quiz/presentation/quiz_history/bloc/quiz_history_bloc.dart';
+import 'package:quizhub/features/quiz/presentation/quiz_list/bloc/quiz_list_bloc.dart';
+import 'package:quizhub/features/quiz/presentation/question/bloc/question_bloc.dart';
+import 'package:quizhub/features/quiz/presentation/quiz_review/bloc/quiz_review_bloc.dart';
+
+part 'init_quiz_dependencies.main.dart';

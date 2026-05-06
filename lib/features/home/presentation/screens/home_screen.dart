@@ -8,7 +8,7 @@ import 'package:quizhub/features/home/presentation/bloc/home_bloc.dart';
 import 'package:quizhub/features/home/presentation/widgets/home_content.dart';
 import 'package:quizhub/features/home/presentation/widgets/home_error_view.dart';
 import 'package:quizhub/features/home/presentation/widgets/home_loading_view.dart';
-import 'package:quizhub/features/quiz/quiz_list_screen.dart';
+import 'package:quizhub/features/quiz/presentation/quiz_list/screens/quiz_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static Route<HomeScreen> route() {
