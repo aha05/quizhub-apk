@@ -1,5 +1,3 @@
-// lib/core/exceptions/api_exception_helper.dart
-
 import 'package:dio/dio.dart';
 import 'package:quizhub/core/exceptions/api_exception.dart';
 

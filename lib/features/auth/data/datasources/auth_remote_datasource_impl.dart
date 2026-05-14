@@ -57,7 +57,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await apiService.post(
         ApiEndpoints.singup,
-        data: {"email": email, "password": password},
+        data: {"name": name, "email": email, "password": password},
       );
       return UserModel.fromJson(response.data);
     } on DioException catch (e) {

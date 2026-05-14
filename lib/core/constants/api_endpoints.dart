@@ -8,7 +8,7 @@ class ApiEndpoints {
   static const login = '/auth/login';
   static const logout = '/auth/logout';
   static const refresh = '/auth/refresh';
-  static const singup = '/auth/user';
+  static const singup = '/users';
   static const currentUser = '/auth/me';
 
   // ? home
